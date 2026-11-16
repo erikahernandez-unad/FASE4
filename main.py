@@ -1,8 +1,15 @@
-#   Trabajo colaborativo Fase 4-UNAD.
-"""
-Software FJ - Sistema Integral de Gestión de Clientes, Servicios y Reservas.
-Curso: Programación (213023) - UNAD - Fase 4.
-"""
+
+# ======================================================================================================================== 
+# UNAD - PROGRAMACIÓN
+# FASE 4 Prácticas Simuladas
+# Nombre de los estudiante: [Diego Alejandro Luque Rodriguez][Erika Yadira Hernandez Romero][Henry Laurin Velasquez Leal]
+# Grupo: [213023_645]
+# Programa: Ingeniería de Sistemas
+# Código Fuente:Fuente Colaborativa
+# Trabajo colaborativo Fase 4-UNAD.
+# Software FJ - Sistema Integral de Gestión de Clientes, Servicios y Reservas.
+# ======================================================================================================================== 
+
 
 from abc import ABC, abstractmethod
 import logging
