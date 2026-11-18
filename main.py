@@ -10,12 +10,10 @@
 # Software FJ - Sistema Integral de Gestión de Clientes, Servicios y Reservas.
 # ======================================================================================================================== 
 
-
 from abc import ABC, abstractmethod
 import logging
 import math
 import re
-
 
 # Los eventos y errores se almacenan en un archivo local, sin base de datos.
 logging.basicConfig(
