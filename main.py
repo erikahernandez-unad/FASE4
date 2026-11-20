@@ -9,6 +9,7 @@
 # Software FJ - Sistema Integral de Gestión de Clientes, Servicios y Reservas.
 # ======================================================================================================================== 
 
+#Importacion de modulos estandar y herramientas para clases abstratas
 from abc import ABC, abstractmethod
 import logging
 import math
@@ -24,6 +25,7 @@ logging.basicConfig(
 logger = logging.getLogger("SoftwareFJ")
 
 
+#Excepciones personalizadas para controlar errores del sitema 
 class SoftwareFJError(Exception):
     """Excepción base del sistema."""
 
@@ -50,6 +52,7 @@ class OperacionNoPermitidaError(SoftwareFJError):
 
 class CalculoInconsistenteError(SoftwareFJError):
     """Error en el cálculo del costo."""
+    #Funciones auxiliares para validar datos de entrada
 
 
 def _validar_identificador(valor):
@@ -70,12 +73,15 @@ def _validar_numero(valor, nombre, minimo=None, maximo=None):
     return valor
 
 
+#Clase base abstrata para las entidades del sistema
 class EntidadBase(ABC):
     """Clase abstracta para las entidades del sistema."""
 
     def __init__(self, identificador):
         self._identificador = _validar_identificador(identificador)
+        #Propiedad de solo lectura para obtener el identificador 
 
+    #Propiedad de lectura para obtener el identificador 
     @property
     def identificador(self):
         return self._identificador
@@ -83,8 +89,9 @@ class EntidadBase(ABC):
     @abstractmethod
     def describir(self):
         """Devuelve una descripción de la entidad."""
+        #Entidad que representa a un cliente y valida sus datos
 
-
+#Entidad que representa a un cliente y valida sus datos 
 class Cliente(EntidadBase):
     """Cliente con datos personales encapsulados y validados."""
 
@@ -100,6 +107,7 @@ class Cliente(EntidadBase):
                 f"No se pudo crear el cliente '{identificador}': {error}"
             ) from error
 
+    #Propiedades  getter y setter para controlar y validar el nombre 
     @property
     def nombre(self):
         return self.__nombre
@@ -110,6 +118,7 @@ class Cliente(EntidadBase):
             raise ValueError("El nombre debe contener al menos 3 caracteres.")
         self.__nombre = valor.strip()
 
+    #Propiedades getter setter para validar el documento (6 a 10 digitos)
     @property
     def documento(self):
         return self.__documento
@@ -119,7 +128,7 @@ class Cliente(EntidadBase):
         if valor is None or not re.fullmatch(r"\d{6,12}", str(valor)):
             raise ValueError("El documento debe tener entre 6 y 12 dígitos.")
         self.__documento = str(valor)
-
+# Propiedades getter y setter para el correo electronico 
     @property
     def correo(self):
         return self.__correo
@@ -149,7 +158,7 @@ class Cliente(EntidadBase):
             f"(Doc: {self.documento})"
         )
 
-
+#Clase base abstracta para los servicios y sus tarifas
 class Servicio(EntidadBase, ABC):
     """Clase abstracta para los servicios ofrecidos por Software FJ."""
 
@@ -184,7 +193,7 @@ class Servicio(EntidadBase, ABC):
         if not isinstance(valor, bool):
             raise ServicioInvalidoError("La disponibilidad debe ser booleana.")
         self._disponible = valor
-
+#Metododos abstractos para validar parametros y calcular costos del servicio
     @abstractmethod
     def validar_parametros(self, duracion):
         """Valida los parámetros propios del servicio."""
@@ -223,6 +232,7 @@ class Servicio(EntidadBase, ABC):
                 f"No fue posible calcular el costo: {error}"
             ) from error
 
+    #Variantes de calculo segun impuesto, descuento o ambos 
     def calcular_costo_con_impuesto(self, duracion, impuesto):
         """Variante de cálculo que aplica únicamente impuesto."""
         return self.calcular_costo(duracion, impuesto=impuesto)
@@ -238,6 +248,7 @@ class Servicio(EntidadBase, ABC):
         )
 
 
+#Subclase concreta para reserva de salas
 class ReservaSala(Servicio):
     """Servicio de reserva de salas."""
 
@@ -271,6 +282,7 @@ class ReservaSala(Servicio):
         )
 
 
+#Subclase concreta para alquiler de equipos de deposito fijo 
 class AlquilerEquipo(Servicio):
     """Servicio de alquiler de equipos."""
 
@@ -305,6 +317,7 @@ class AlquilerEquipo(Servicio):
             f"${self._tarifa_hora:,.0f}/hora + depósito"
         )
 
+#Subclase concreta para asesorias segun nivel y recargo 
 
 class AsesoriaEspecializada(Servicio):
     """Servicio de asesorías especializadas."""
@@ -341,6 +354,7 @@ class AsesoriaEspecializada(Servicio):
         )
 
 
+#Entidad que gestiona la reserva,validaciones y estados 
 class Reserva(EntidadBase):
     """Integra cliente, servicio, duración y estado."""
 
@@ -383,6 +397,7 @@ class Reserva(EntidadBase):
     def estado(self):
         return self.__estado
 
+    #Metodos de transicion de estado y procesamiento de la reserva 
     def confirmar(self):
         if self.__estado != "PENDIENTE":
             raise OperacionNoPermitidaError(
@@ -441,7 +456,7 @@ class Reserva(EntidadBase):
             f"{self.cliente.nombre} - {self.servicio.nombre} - {self.duracion}h"
         )
 
-
+#Gestor principal que administra clientes ,servicios y reservas
 class GestorFJ:
     """Administra clientes, servicios y reservas mediante listas internas."""
 
@@ -498,6 +513,7 @@ class GestorFJ:
         finally:
             logger.info("Fin del intento de creación de servicio")
 
+    #Metodos de gestion de reservas y consultas del sistema 
     def crear_reserva(self, identificador, cliente, servicio, duracion):
         try:
             reserva = Reserva(identificador, cliente, servicio, duracion)
@@ -601,6 +617,7 @@ def simular():
     return gestor
 
 
+#Funciones auxiliares de entrada interactiva por consola 
 def leer_texto(mensaje):
     """Solicita un texto no vacío."""
     while True:
@@ -625,6 +642,7 @@ def leer_numero(mensaje, minimo=None, maximo=None, entero=False):
             )
             print(f"Entrada inválida: {error}")
 
+#Funciones para consultar y mostrar registros en pantalla 
 
 def mostrar_clientes(gestor):
     print("\n--- CLIENTES REGISTRADOS ---")
@@ -668,6 +686,7 @@ def buscar_por_id(elementos, identificador):
     return None
 
 
+#Opciones interactivas de consola para gestionar operaciones 
 def registrar_cliente_menu(gestor):
     print("\n--- REGISTRAR CLIENTE ---")
     datos = (
@@ -821,6 +840,7 @@ def cambiar_disponibilidad_menu(gestor):
     logger.info("Disponibilidad del servicio %s: %s", identificador, estado)
 
 
+#Bucle principal del menu interactivo y ejecucion del programa 
 def menu_interactivo():
     """Punto principal de la interfaz de usuario por consola."""
     gestor = GestorFJ()
